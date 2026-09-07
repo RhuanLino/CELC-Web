@@ -1,0 +1,9 @@
+[
+  { "id": "p1", "name": "O Livro dos Espíritos", "author": "Allan Kardec", "category": "Doutrina espírita", "sku": "LIV-001", "price": 42.9, "stock": 18 },
+  { "id": "p2", "name": "Nosso Lar", "author": "Chico Xavier · André Luiz", "category": "Romance", "sku": "LIV-002", "price": 38, "stock": 12 },
+  { "id": "p3", "name": "O Evangelho Segundo o Espiritismo", "author": "Allan Kardec", "category": "Doutrina espírita", "sku": "LIV-003", "price": 45, "stock": 8 },
+  { "id": "p4", "name": "Há Dois Mil Anos", "author": "Chico Xavier · Emmanuel", "category": "Romance", "sku": "LIV-004", "price": 49.9, "stock": 3 },
+  { "id": "p5", "name": "Caminho, Verdade e Vida", "author": "Chico Xavier · Emmanuel", "category": "Reflexões", "sku": "LIV-005", "price": 32, "stock": 10 },
+  { "id": "p6", "name": "Marcador Luz do Caminho", "author": "Coleção da casa", "category": "Papelaria", "sku": "PAP-001", "price": 5, "stock": 24 },
+  { "id": "p7", "name": "O Pequeno Príncipe", "author": "Antoine de Saint-Exupéry", "category": "Infantil", "sku": "LIV-006", "price": 24.9, "stock": 0 }
+]

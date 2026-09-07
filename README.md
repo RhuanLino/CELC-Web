@@ -32,9 +32,11 @@ Oferecer à comunidade um portal claro e acolhedor para conhecer e acessar as at
 - Agenda de atividades e encontros
 - Informações de localização, contato e redes sociais
 - Acesso ao módulo da Livraria Humberto de Campos
-- Interfaces iniciais para produtos, obreiros e caixa
+- CRUD de produtos e clientes com busca e validações
+- Frente de caixa com estoque, quantidades, totais, troco e pagamentos Pix, crédito, débito, dinheiro e a prazo
+- Visão geral e histórico de vendas com detalhes e pagamentos pendentes
 
-> O projeto está em desenvolvimento. As telas administrativas ainda são protótipos e receberão persistência de dados, autenticação e regras de negócio nas próximas etapas.
+> A livraria usa pequenos JSONs fixos e serviços assíncronos tipados. As alterações ficam em memória e são restauradas ao recarregar a página. Os pagamentos são simulados. Consulte [telas, regras e contratos para a futura API](docs/livraria.md).
 
 ---
 
@@ -101,9 +103,12 @@ Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 | Rota | Finalidade |
 | --- | --- |
 | `/` | Landing page institucional da C.E.L.C |
-| `/produtos` | Cadastro e listagem de produtos da livraria |
+| `/livraria` | Visão geral da livraria |
+| `/produtos` | CRUD e estoque de produtos da livraria |
+| `/clientes` | CRUD de clientes da livraria |
 | `/obreiros` | Área inicial para gestão de obreiros |
-| `/caixa` | Área inicial do caixa da livraria |
+| `/caixa` | Frente de caixa e registro de vendas |
+| `/vendas` | Histórico, detalhes e vendas a prazo |
 
 Novas rotas institucionais e administrativas serão incluídas conforme os módulos forem implementados.
 
