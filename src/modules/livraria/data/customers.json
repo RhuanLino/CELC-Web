@@ -1,0 +1,5 @@
+[
+  { "id": "c1", "name": "Ana Oliveira", "email": "ana@example.com", "phone": "(61) 99999-0101", "notes": "Prefere livros de estudo." },
+  { "id": "c2", "name": "Carlos Santos", "email": "carlos@example.com", "phone": "(61) 99999-0102", "notes": "" },
+  { "id": "c3", "name": "Maria Ferreira", "email": "maria@example.com", "phone": "(61) 99999-0103", "notes": "" }
+]
