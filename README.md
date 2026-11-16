@@ -76,6 +76,20 @@ Ao adicionar novos pacotes:
 npm install <nome-do-pacote>
 ```
 
+### Variáveis de ambiente
+
+Copie `.env.example` para `.env.local` e configure:
+
+```env
+AUTH_API_URL=https://api.exemplo.com
+JWT_SECRET=segredo-compartilhado-com-o-backend
+```
+
+- `AUTH_API_URL`: URL base do backend que expõe `POST /auth/login` e retorna `{ "token": "..." }`.
+- `JWT_SECRET`: segredo HS256 usado para validar a assinatura do token no servidor.
+
+O login salva o JWT em um cookie `httpOnly`; as rotas `/livraria/**` e `/tesouraria` redirecionam para `/login` quando não há sessão válida.
+
 ---
 
 ## ▶️ Executando o Projeto
@@ -103,12 +117,13 @@ Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 | Rota | Finalidade |
 | --- | --- |
 | `/` | Landing page institucional da C.E.L.C |
+| `/login` | Login dos módulos internos |
 | `/livraria` | Visão geral da livraria |
-| `/produtos` | CRUD e estoque de produtos da livraria |
-| `/clientes` | CRUD de clientes da livraria |
-| `/obreiros` | Área inicial para gestão de obreiros |
-| `/caixa` | Frente de caixa e registro de vendas |
-| `/vendas` | Histórico, detalhes e vendas a prazo |
+| `/livraria/produtos` | CRUD e estoque de produtos da livraria |
+| `/livraria/clientes` | CRUD de clientes da livraria |
+| `/livraria/caixa` | Frente de caixa e registro de vendas |
+| `/livraria/vendas` | Histórico, detalhes e vendas a prazo |
+| `/tesouraria` | Gestão de mensalidades dos obreiros |
 
 Novas rotas institucionais e administrativas serão incluídas conforme os módulos forem implementados.
 
@@ -124,16 +139,20 @@ Novas rotas institucionais e administrativas serão incluídas conforme os módu
  ┃ ┗ 🖼️ celc-logo.png         # versão raster da marca
  ┣ 📂 src
  ┃ ┣ 📂 app                   # rotas do App Router
- ┃ ┃ ┣ 📂 caixa               # módulo de caixa da livraria
- ┃ ┃ ┣ 📂 obreiros            # gestão de obreiros
- ┃ ┃ ┣ 📂 produtos            # gestão de produtos
+ ┃ ┃ ┣ 📂 api/auth            # login e logout (cookie httpOnly)
+ ┃ ┃ ┣ 📂 livraria            # rotas internas da livraria
+ ┃ ┃ ┣ 📂 login               # página de login dos módulos
+ ┃ ┃ ┣ 📂 tesouraria          # gestão de mensalidades
  ┃ ┃ ┣ 📜 globals.css         # tema e estilos globais
  ┃ ┃ ┣ 📜 layout.tsx          # layout raiz e metadados
  ┃ ┃ ┗ 📜 page.tsx            # landing page institucional
  ┃ ┣ 📂 components
  ┃ ┃ ┗ 📂 ui                  # componentes reutilizáveis de interface
- ┃ ┗ 📂 lib
- ┃   ┗ 📜 utils.ts            # funções auxiliares compartilhadas
+ ┃ ┣ 📂 lib
+ ┃ ┃ ┣ 📜 auth.ts             # validação do JWT e sessão
+ ┃ ┃ ┗ 📜 utils.ts            # funções auxiliares compartilhadas
+ ┃ ┣ 📂 modules               # regras e componentes dos módulos
+ ┃ ┗ 📜 proxy.ts              # proteção das rotas internas
  ┣ 📜 components.json         # configuração do shadcn
  ┣ 📜 next.config.ts          # configuração do Next.js
  ┣ 📜 package.json            # dependências e scripts
