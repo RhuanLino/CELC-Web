@@ -1,47 +1,39 @@
 import { NextResponse } from "next/server";
+import { authTokenFrom, login } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
 import { AUTH_COOKIE, sessionMaxAge, verifyToken } from "@/lib/auth";
 
 export async function POST(request: Request) {
-  let body: { email?: unknown; password?: unknown };
+  let body: { username?: unknown; senha?: unknown };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ message: "Requisição inválida." }, { status: 400 });
   }
 
-  const email = typeof body.email === "string" ? body.email.trim() : "";
-  const password = typeof body.password === "string" ? body.password : "";
+  const username = typeof body.username === "string" ? body.username.trim() : "";
+  const senha = typeof body.senha === "string" ? body.senha : "";
 
-  if (!email || !password) {
-    return NextResponse.json({ message: "Informe e-mail e senha." }, { status: 400 });
+  if (!username || !senha) {
+    return NextResponse.json({ message: "Informe usuário e senha." }, { status: 400 });
   }
 
-  const apiUrl = process.env.AUTH_API_URL;
-  if (!apiUrl) {
-    return NextResponse.json({ message: "AUTH_API_URL não configurada no servidor." }, { status: 500 });
-  }
-
-  let upstream: Response;
+  let data: Awaited<ReturnType<typeof login>>;
   try {
-    upstream = await fetch(`${apiUrl.replace(/\/+$/, "")}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ email, password }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
-  } catch {
+    data = await login({ username, senha });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.status === 401) {
+        return NextResponse.json({ message: "Usuário ou senha inválidos." }, { status: 401 });
+      }
+      if (error.status >= 400 && error.status < 500) {
+        return NextResponse.json({ message: error.message }, { status: error.status });
+      }
+    }
     return NextResponse.json({ message: "Não foi possível contatar o serviço de autenticação." }, { status: 502 });
   }
 
-  const data = await upstream.json().catch(() => null);
-
-  if (!upstream.ok) {
-    const message = upstream.status === 401 ? "E-mail ou senha inválidos." : "O serviço de autenticação recusou a solicitação.";
-    return NextResponse.json({ message }, { status: upstream.status === 401 ? 401 : 502 });
-  }
-
-  const token = typeof data?.token === "string" ? data.token : "";
+  const token = authTokenFrom(data);
   if (!token) {
     return NextResponse.json({ message: "O serviço de autenticação não retornou um token." }, { status: 502 });
   }

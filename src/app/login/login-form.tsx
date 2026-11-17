@@ -20,7 +20,7 @@ export function LoginForm({ next }: { next: string }) {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.get("email"), password: form.get("password") }),
+        body: JSON.stringify({ username: form.get("username"), senha: form.get("senha") }),
       });
       const data = (await response.json().catch(() => null)) as { message?: string } | null;
 
@@ -41,13 +41,13 @@ export function LoginForm({ next }: { next: string }) {
   return (
     <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
       <label className="flex flex-col gap-2 text-sm font-semibold text-[#456372]">
-        E-mail
+        Usuário
         <input
-          name="email"
-          type="email"
-          autoComplete="email"
+          name="username"
+          type="text"
+          autoComplete="username"
           required
-          placeholder="seu.email@celc.org.br"
+          placeholder="Seu usuário"
           className="rounded-xl border border-[#dcd5c4] bg-[#fdfcf8] px-4 py-3 text-base font-normal text-[#173f59] outline-none transition focus:border-[#0b5277] focus:ring-4 focus:ring-[#0b5277]/10"
         />
       </label>
@@ -55,7 +55,7 @@ export function LoginForm({ next }: { next: string }) {
       <label className="flex flex-col gap-2 text-sm font-semibold text-[#456372]">
         Senha
         <input
-          name="password"
+          name="senha"
           type="password"
           autoComplete="current-password"
           required

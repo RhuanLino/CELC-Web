@@ -81,12 +81,15 @@ npm install <nome-do-pacote>
 Copie `.env.example` para `.env.local` e configure:
 
 ```env
-AUTH_API_URL=https://api.exemplo.com
 JWT_SECRET=segredo-compartilhado-com-o-backend
 ```
 
-- `AUTH_API_URL`: URL base do backend que expõe `POST /auth/login` e retorna `{ "token": "..." }`.
+- `API_URL` (opcional): URL base do backend. Sem essa variável, o servidor usa `http://localhost:8080` em desenvolvimento e `http://api:8080` em produção (serviço `api` da rede Docker). Defina-a apenas se precisar sobrescrever esses endereços, por exemplo em um `.env.local` local. `AUTH_API_URL` também é aceita por compatibilidade.
 - `JWT_SECRET`: segredo HS256 usado para validar a assinatura do token no servidor.
+
+O backend deve aceitar `POST /auth/login` com `{ "username": "...", "senha": "..." }`. A resposta pode trazer o JWT em `token`, `access_token` ou `accessToken`.
+
+As chamadas server-side usam o cliente Axios em `src/lib/api/client.ts`, que adiciona automaticamente `Authorization: Bearer <jwt>` a partir do cookie `httpOnly`. Os serviços ficam em `src/lib/api/auth.ts` (login e cadastro) e `src/lib/api/livraria.ts` (produtos, clientes e vendas).
 
 O login salva o JWT em um cookie `httpOnly`; as rotas `/livraria/**` e `/tesouraria` redirecionam para `/login` quando não há sessão válida.
 
