@@ -2,24 +2,25 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, BookOpen, LayoutDashboard, Package, ReceiptText, ShoppingBag, Users, X } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, BookOpen, LayoutDashboard, LogOut, Package, ReceiptText, ShoppingBag, Users, X } from "lucide-react";
 import { errorMessage } from "../format";
 
 const navigation = [
   { href: "/livraria", label: "Visão geral", icon: LayoutDashboard },
-  { href: "/caixa", label: "Frente de caixa", icon: ShoppingBag },
-  { href: "/produtos", label: "Produtos", icon: Package },
-  { href: "/clientes", label: "Clientes", icon: Users },
-  { href: "/vendas", label: "Vendas", icon: ReceiptText },
+  { href: "/livraria/caixa", label: "Frente de caixa", icon: ShoppingBag },
+  { href: "/livraria/produtos", label: "Produtos", icon: Package },
+  { href: "/livraria/clientes", label: "Clientes", icon: Users },
+  { href: "/livraria/vendas", label: "Vendas", icon: ReceiptText },
 ];
+const isActive = (path: string, href: string) => href === "/livraria" ? path === href : path.startsWith(href);
 export function BookstoreShell({ children }: { children: ReactNode }) {
   const path = usePathname();
   return <div className="bookstore"><aside className="book-sidebar">
     <Link href="/livraria" className="book-brand"><span className="brand-symbol"><BookOpen size={25} strokeWidth={1.5}/></span><span>Humberto<br/><strong>de Campos</strong><small>LIVRARIA · C.E.L.C</small></span></Link>
     <p className="nav-caption">GESTÃO DA LIVRARIA</p>
-    <nav aria-label="Livraria">{navigation.map(({ href, label, icon: Icon }) => <Link key={href} href={href} aria-current={path === href ? "page" : undefined} className={path === href ? "active" : ""}><Icon size={19}/>{label}{href === "/caixa" && <span className="nav-pdv">PDV</span>}</Link>)}</nav>
-    <div className="sidebar-bottom"><div className="sidebar-note"><BookOpen size={22}/><p>Conhecimento que<br/><em>ilumina caminhos.</em></p><span>Desde 1977, a serviço do bem.</span></div><Link href="/"><ArrowLeft size={16}/> Voltar para a C.E.L.C <ArrowUpRight size={14}/></Link></div>
-  </aside><div className="book-workspace"><header className="book-topbar"><div><span className="topbar-parent">Livraria</span><span className="breadcrumb-slash">/</span><strong>{navigation.find((n) => n.href === path)?.label ?? "Gestão"}</strong></div><span className="demo-badge"><span/> Demonstração</span></header><main className="book-main">{children}</main><footer className="book-footer"><span>Livraria Humberto de Campos</span><span>Casa Espiritualista Luz do Caminho</span></footer></div></div>;
+    <nav aria-label="Livraria">{navigation.map(({ href, label, icon: Icon }) => <Link key={href} href={href} aria-current={isActive(path, href) ? "page" : undefined} className={isActive(path, href) ? "active" : ""}><Icon size={19}/>{label}{href === "/livraria/caixa" && <span className="nav-pdv">PDV</span>}</Link>)}</nav>
+    <div className="sidebar-bottom"><div className="sidebar-note"><BookOpen size={22}/><p>Conhecimento que<br/><em>ilumina caminhos.</em></p><span>Desde 1977, a serviço do bem.</span></div><a href="/api/auth/logout"><LogOut size={16}/> Sair da conta <ArrowUpRight size={14}/></a><Link href="/"><ArrowLeft size={16}/> Voltar para a C.E.L.C <ArrowUpRight size={14}/></Link></div>
+  </aside><div className="book-workspace"><header className="book-topbar"><div><span className="topbar-parent">Livraria</span><span className="breadcrumb-slash">/</span><strong>{navigation.find((n) => n.href === path)?.label ?? "Gestão"}</strong></div><div className="flex items-center gap-3"><span className="demo-badge"><span/> Demonstração</span><a href="/api/auth/logout" className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#8a5a4a] hover:text-[#b44a41]"><LogOut size={14}/> Sair</a></div></header><main className="book-main">{children}</main><footer className="book-footer"><span>Livraria Humberto de Campos</span><span>Casa Espiritualista Luz do Caminho</span></footer></div></div>;
 }
 export function PageHeading({ eyebrow = "LIVRARIA HUMBERTO DE CAMPOS", title, description, action }: { eyebrow?: string; title: string; description: string; action?: ReactNode }) {
   return <div className="page-heading"><div><p className="book-eyebrow">{eyebrow}</p><h1>{title}</h1><p>{description}</p></div>{action}</div>;
