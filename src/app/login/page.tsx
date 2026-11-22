@@ -15,10 +15,11 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string | string[] }>;
+  searchParams: Promise<{ next?: string | string[]; cadastrado?: string | string[] }>;
 }) {
   const params = await searchParams;
   const next = safeNextPath(params.next);
+  const cadastrado = params.cadastrado === "1";
   const token = (await cookies()).get(AUTH_COOKIE)?.value;
 
   if (await verifyToken(token)) redirect(next);
@@ -67,7 +68,18 @@ export default async function LoginPage({
             <p className="mt-3 text-sm leading-6 text-[#6c7d84]">
               Informe suas credenciais para acessar a livraria e a tesouraria.
             </p>
+            {cadastrado && (
+              <p role="status" className="mt-5 rounded-xl border border-[#cfe6d3] bg-[#eef7ef] px-4 py-3 text-sm text-[#2f6b3a]">
+                Cadastro realizado com sucesso! Faça login para continuar.
+              </p>
+            )}
             <LoginForm next={next} />
+            <p className="mt-6 text-center text-sm text-[#6c7d84]">
+              Ainda não tem conta?{" "}
+              <Link href="/cadastro" className="font-semibold text-[#0b5277] hover:underline">
+                Criar cadastro
+              </Link>
+            </p>
           </div>
         </div>
       </section>

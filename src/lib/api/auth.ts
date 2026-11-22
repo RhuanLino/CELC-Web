@@ -5,8 +5,20 @@ export interface AuthCredentials {
   senha: string;
 }
 
-export interface RegisterInput extends AuthCredentials {
-  [key: string]: unknown;
+export interface RegisterInput {
+  nome: string;
+  username: string;
+  email: string;
+  senha: string;
+  nomeEspiritual?: string;
+  cpf?: string;
+  rg?: string;
+  dataNascimento?: string;
+  telefone?: string;
+  estadoCivil?: string;
+  medium?: string;
+  cidade?: string;
+  uf?: string;
 }
 
 export interface AuthTokenResponse {
@@ -16,12 +28,18 @@ export interface AuthTokenResponse {
   [key: string]: unknown;
 }
 
+export interface RegisterResponse {
+  sucesso?: boolean;
+  mensagem?: string;
+  [key: string]: unknown;
+}
+
 export function login(input: AuthCredentials) {
   return api.post<AuthTokenResponse>("/auth/login", input, { withAuth: false });
 }
 
 export function register(input: RegisterInput) {
-  return api.post<AuthTokenResponse>("/auth/register", input, { withAuth: false });
+  return api.post<RegisterResponse>("/auth/cadastro", input, { withAuth: false });
 }
 
 export function authTokenFrom(data: unknown): string {

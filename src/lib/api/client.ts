@@ -73,7 +73,7 @@ export const api = {
 function messageFrom(data: unknown): string | null {
   if (!data || typeof data !== "object") return null;
   const record = data as Record<string, unknown>;
-  const message = record.message ?? record.error ?? record.detail;
+  const message = record.message ?? record.mensagem ?? record.error ?? record.detail;
   return typeof message === "string" && message.trim() ? message : null;
 }
 
