@@ -18,6 +18,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Informe usuário e senha." }, { status: 400 });
   }
 
+  if (!process.env.JWT_SECRET) {
+    return NextResponse.json({ message: "JWT_SECRET não configurado no servidor. Defina-o no .env.local e reinicie o Next." }, { status: 500 });
+  }
+
   let data: Awaited<ReturnType<typeof login>>;
   try {
     data = await login({ username, senha });
