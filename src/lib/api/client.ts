@@ -93,3 +93,10 @@ function toApiError(error: unknown): ApiError {
 
   return new ApiError("Não foi possível comunicar com a API.", 502);
 }
+
+export function apiErrorResponse(error: unknown): Response {
+  if (error instanceof ApiError) {
+    return Response.json({ message: error.message }, { status: error.status });
+  }
+  return Response.json({ message: "Não foi possível comunicar com a API." }, { status: 502 });
+}

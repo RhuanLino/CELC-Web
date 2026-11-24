@@ -13,21 +13,21 @@ const compiled = ts.transpileModule(readFileSync(path, "utf8"), {
 const adapter = {};
 new Function("require", "exports", compiled)(createRequire(path), adapter);
 const { createMockBookstoreService, localDate } = adapter;
-const product = { name: "Livro de teste", author: "Autor", category: "Estudo", sku: "TEST-01", price: 0.1, stock: 5 };
+const product = { codigoBarras: "7890000000017", nome: "Livro de teste", descricao: "", preco: 0.1, estoque: 5, validade: "", isbn: "", categoriaId: "1", categoriaNome: "Estudo", marcaId: "1", marcaNome: "Marca Teste", generoId: "", generoNome: "", espiritoId: "", espiritoNome: "", autorId: "1", autorNome: "Autor" };
 const customer = { name: "Leitor Teste", email: "leitor@example.com", phone: "61999999999", notes: "" };
 const sale = (items, payment = { method: "pix" }, customerId = null) => ({ items, payment, customerId });
 
 test("CRUD de produtos, código único, busca e isolamento dos dados", async () => {
   const service = createMockBookstoreService();
   const created = await service.products.create(product);
-  await assert.rejects(service.products.create({ ...product, sku: "test-01" }), /código/);
-  await assert.rejects(service.products.create({ ...product, sku: "INVALID", price: 0.001 }), /preço/);
-  await service.products.update(created.id, { ...product, name: "Livro atualizado", price: 20 });
-  assert.equal((await service.products.getById(created.id)).price, 20);
+  await assert.rejects(service.products.create({ ...product, codigoBarras: "7890000000017" }), /código/);
+  await assert.rejects(service.products.create({ ...product, codigoBarras: "INVALID", preco: -1 }), /preço/);
+  await service.products.update(created.id, { ...product, nome: "Livro atualizado", preco: 20 });
+  assert.equal((await service.products.getById(created.id)).preco, 20);
   const rows = await service.products.list("atualizado");
   assert.equal(rows.length, 1);
-  rows[0].stock = 999;
-  assert.equal((await service.products.getById(created.id)).stock, 5);
+  rows[0].estoque = 999;
+  assert.equal((await service.products.getById(created.id)).estoque, 5);
   await service.products.remove(created.id);
   await assert.rejects(service.products.getById(created.id), /não encontrado/);
 });
@@ -49,7 +49,7 @@ test("dinheiro: soma em centavos, troco e baixa de estoque", async () => {
   assert.equal(result.total, 0.3);
   assert.equal(result.change, 0.7);
   assert.equal(result.status, "paid");
-  assert.equal((await service.products.getById(p.id)).stock, 2);
+  assert.equal((await service.products.getById(p.id)).estoque, 2);
 });
 
 test("falhas não alteram estoque nem registram vendas parcialmente", async () => {
@@ -58,7 +58,7 @@ test("falhas não alteram estoque nem registram vendas parcialmente", async () =
   await assert.rejects(service.sales.create(sale([{ productId: "p1", quantity: 1 }], { method: "cash", amountTendered: 1 })), /valor recebido/);
   await assert.rejects(service.sales.create(sale([])), /pelo menos/);
   await assert.rejects(service.sales.create(sale([{ productId: "p1", quantity: 1.5 }])), /inteiro/);
-  assert.equal((await service.products.getById("p1")).stock, 18);
+  assert.equal((await service.products.getById("p1")).estoque, 18);
   assert.equal((await service.sales.list()).length, 0);
 });
 
@@ -90,7 +90,7 @@ test("Pix e cartões; histórico preserva preço e nome após edição/exclusão
     assert.equal(result.status, "paid");
   }
   const p = await service.products.getById("p1");
-  await service.products.update("p1", { ...p, name: "Nome alterado", price: 999 });
+  await service.products.update("p1", { ...p, nome: "Nome alterado", preco: 999 });
   await service.products.remove("p1");
   const history = await service.sales.list();
   assert.equal(history[0].items[0].name, "O Livro dos Espíritos");

@@ -1,14 +1,38 @@
 export interface Product {
   id: string;
-  name: string;
-  author: string;
-  category: string;
-  sku: string;
-  price: number;
-  stock: number;
+  codigoBarras: string;
+  nome: string;
+  descricao: string;
+  preco: number;
+  estoque: number;
+  validade: string;
+  isbn: string;
+  categoriaId: string;
+  categoriaNome: string;
+  marcaId: string;
+  marcaNome: string;
+  generoId: string;
+  generoNome: string;
+  espiritoId: string;
+  espiritoNome: string;
+  autorId: string;
+  autorNome: string;
 }
 
 export type ProductInput = Omit<Product, "id">;
+
+export interface LookupOption {
+  id: string;
+  nome: string;
+}
+
+export interface ProductLookups {
+  categorias: LookupOption[];
+  marcas: LookupOption[];
+  generos: LookupOption[];
+  espiritos: LookupOption[];
+  autores: LookupOption[];
+}
 
 export interface Customer {
   id: string;

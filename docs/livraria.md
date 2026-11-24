@@ -17,9 +17,9 @@ No caixa: **F2** foca a busca; **Enter** adiciona um resultado único ou um cód
 ## Dados e serviços
 
 - Contratos: `src/modules/livraria/types.ts`.
-- Adaptador simulado e ponto de substituição: `src/modules/livraria/service.ts`, exportação `bookstoreService: BookstoreService`.
-- JSONs iniciais: `src/modules/livraria/data/` — 7 produtos, 3 clientes fictícios e nenhuma venda.
-- Componentes consomem apenas os métodos assíncronos do serviço, sem chamadas a endpoints inexistentes.
+- Produtos: a tela de produtos consome as rotas `/api/products` do Next (`src/app/api/products`), que encaminham para o backend `/produtos` via `src/lib/api/livraria.ts`. Os selects de categoria, marca, gênero, espírito e autor vêm de `/api/lookups`, que consulta `/categorias`, `/marcas`, `/generos`, `/espiritos` e `/autores`.
+- Clientes e vendas continuam no adaptador simulado: `src/modules/livraria/service.ts`, exportação `bookstoreService: BookstoreService`.
+- JSONs iniciais: `src/modules/livraria/data/` — 7 produtos, 3 clientes fictícios e nenhuma venda. Os produtos do JSON alimentam apenas o caixa e o histórico simulados.
 - O adaptador mantém alterações **em memória na aba**, compartilhadas entre as rotas via navegação interna. Recarregar a página ou abrir outra aba restaura os JSONs. Não há banco, localStorage ou persistência no servidor; os arquivos JSON não são modificados pelas telas.
 - Cada consulta retorna cópias, evitando alterações acidentais por referência. `createMockBookstoreService()` cria uma instância isolada para testes.
 
@@ -43,7 +43,7 @@ Os endpoints abaixo estão documentados para implementação futura; ainda não 
 | `sales.getById(id)` | `GET /api/sales/:id` | ID | `Sale` |
 | `sales.create(input)` | `POST /api/sales` | `SaleInput` | `Sale` com valores calculados |
 
-`ProductInput`: `name`, `author`, `category`, `sku`, `price` (reais), `stock` (inteiro). Código único sem diferenciar maiúsculas/minúsculas; nome, categoria, código, preço positivo e estoque não negativo são obrigatórios.
+`ProductInput`: `codigoBarras`, `nome`, `descricao`, `preco` (reais), `estoque` (inteiro), `validade`, `isbn`, `categoriaId`, `marcaId`, `generoId`, `espiritoId`, `autorId` e os nomes de exibição (`categoriaNome`, `marcaNome`, `generoNome`, `espiritoNome`, `autorNome`). Código de barras único; nome, categoria, marca, código e estoque não negativo são obrigatórios. Os campos `generoId`, `espiritoId` e `autorId` são opcionais.
 
 `CustomerInput`: `name`, `email`, `phone`, `notes`. Nome obrigatório; os demais campos aceitam string vazia. Quando preenchidos, e-mail e telefone com DDD são validados. IDs são strings geradas pelo serviço.
 

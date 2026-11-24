@@ -24,11 +24,30 @@ export function createMockBookstoreService(): BookstoreService {
     return row;
   };
   const productData = (input: ProductInput, id?: string): ProductInput => {
-    requireValue(input.name.trim() && input.category.trim() && input.sku.trim(), "Preencha nome, categoria e código do produto.");
-    requireValue(Number.isFinite(input.price) && input.price >= 0.01 && input.price <= 999999, "Informe um preço entre R$ 0,01 e R$ 999.999,00.");
-    requireValue(Number.isSafeInteger(input.stock) && input.stock >= 0, "O estoque deve ser um número inteiro maior ou igual a zero.");
-    requireValue(!products.some((p) => p.id !== id && normalize(p.sku) === normalize(input.sku.trim())), "Já existe um produto com esse código.");
-    return { ...input, name: input.name.trim(), category: input.category.trim(), author: input.author.trim(), sku: input.sku.trim().toUpperCase(), price: cents(input.price) / 100 };
+    requireValue(input.nome.trim() && input.codigoBarras.trim(), "Preencha o nome e o código de barras do produto.");
+    requireValue(input.categoriaId.trim() && input.marcaId.trim() && input.categoriaNome.trim() && input.marcaNome.trim(), "Selecione a categoria e a marca do produto.");
+    requireValue(Number.isFinite(input.preco) && input.preco >= 0 && input.preco <= 999999, "Informe um preço entre R$ 0,00 e R$ 999.999,00.");
+    requireValue(Number.isSafeInteger(input.estoque) && input.estoque >= 0, "O estoque deve ser um número inteiro maior ou igual a zero.");
+    requireValue(!products.some((p) => p.id !== id && normalize(p.codigoBarras) === normalize(input.codigoBarras.trim())), "Já existe um produto com esse código de barras.");
+    return {
+      ...input,
+      codigoBarras: input.codigoBarras.trim(),
+      nome: input.nome.trim(),
+      descricao: input.descricao.trim(),
+      validade: input.validade.trim(),
+      isbn: input.isbn.trim(),
+      categoriaId: input.categoriaId.trim(),
+      categoriaNome: input.categoriaNome.trim(),
+      marcaId: input.marcaId.trim(),
+      marcaNome: input.marcaNome.trim(),
+      generoId: input.generoId.trim(),
+      generoNome: input.generoNome.trim(),
+      espiritoId: input.espiritoId.trim(),
+      espiritoNome: input.espiritoNome.trim(),
+      autorId: input.autorId.trim(),
+      autorNome: input.autorNome.trim(),
+      preco: cents(input.preco) / 100,
+    };
   };
   const customerData = (input: CustomerInput): CustomerInput => {
     requireValue(input.name.trim().length >= 2, "Informe o nome do cliente (pelo menos 2 caracteres).");
@@ -38,7 +57,7 @@ export function createMockBookstoreService(): BookstoreService {
   };
   return {
     products: {
-      async list(query = "") { return clone(products.filter((p) => normalize(`${p.name} ${p.author} ${p.sku}`).includes(normalize(query)))); },
+      async list(query = "") { return clone(products.filter((p) => normalize(`${p.nome} ${p.autorNome} ${p.codigoBarras} ${p.isbn} ${p.categoriaNome}`).includes(normalize(query)))); },
       async getById(id) { return clone(find(products, id)); },
       async create(input) { const row = { ...productData(input), id: crypto.randomUUID() }; products.push(row); return clone(row); },
       async update(id, input) { const row = find(products, id); Object.assign(row, productData(input, id)); return clone(row); },
@@ -69,8 +88,8 @@ export function createMockBookstoreService(): BookstoreService {
         }
         const items = [...quantities].map(([productId, quantity]) => {
           const product = find(products, productId);
-          requireValue(quantity <= product.stock, `Estoque insuficiente para ${product.name}. Disponível: ${product.stock}.`);
-          return { productId, name: product.name, sku: product.sku, quantity, unitPrice: product.price, total: cents(product.price) * quantity / 100 };
+          requireValue(quantity <= product.estoque, `Estoque insuficiente para ${product.nome}. Disponível: ${product.estoque}.`);
+          return { productId, name: product.nome, sku: product.codigoBarras, quantity, unitPrice: product.preco, total: cents(product.preco) * quantity / 100 };
         });
         const total = items.reduce((sum, item) => sum + cents(item.total), 0) / 100;
         let change = 0;
@@ -90,7 +109,7 @@ export function createMockBookstoreService(): BookstoreService {
         }
         const sale: Sale = { id: crypto.randomUUID(), number: String(sales.length + 1).padStart(4, "0"), createdAt: new Date().toISOString(), customerId: customer?.id ?? null, customerName: customer?.name ?? "Consumidor não identificado", items, total, payment, change, status: payment.method === "on_account" ? "pending" : "paid" };
         // Validate everything before changing stock or recording the sale.
-        for (const item of items) find(products, item.productId).stock -= item.quantity;
+        for (const item of items) find(products, item.productId).estoque -= item.quantity;
         sales.push(sale);
         return clone(sale);
       },
